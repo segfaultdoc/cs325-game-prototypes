@@ -31023,6 +31023,7 @@ Phaser.Stage = function (game) {
     * @private
     */
     this._bgColor = { r: 0, g: 0, b: 0, a: 0, color: 0, rgba: '#000000' };
+	//this._bgColor = { r: 0, g: 0, b: 0, a: 0, color: 0, rgba: '#000000' };
 
     if (!this.game.transparent)
     {
