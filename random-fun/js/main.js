@@ -14,7 +14,7 @@ window.onload = function() {
     
     function preload() {
         // Load an image and call it 'logo'.
-        game.load.image( 'logo', 'assets/phaser.png' );
+        game.load.image( 'logo', 'assets/football.png' );
     }
     
     var bouncy;
@@ -34,7 +34,7 @@ window.onload = function() {
         // Add some text using a CSS style.
         // Center it in X, and position its top 15 pixels from the top of the world.
         var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "Build something amazing.", style );
+        var text = game.add.text( game.world.centerX, 15, "Let's play football!", style );
         text.anchor.setTo( 0.5, 0.0 );
     }
     
@@ -44,6 +44,6 @@ window.onload = function() {
         // in X or Y.
         // This function returns the rotation angle that makes it visually match its
         // new trajectory.
-        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, game.input.activePointer, 500, 500, 500 );
+        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, game.input.activePointer, 200, 200, 200 );
     }
 };
