@@ -5,7 +5,7 @@ window.onload = function() {
   const GRAVITY = 900;
   const JET = 420;
   const OPENING = 200;
-  const SPAWN_RATE = 1.25;
+  const SPAWN_RATE = 5;
   var ocean;
   var player;
   
@@ -86,6 +86,11 @@ window.onload = function() {
                     if(this.player.body.bottom >= this.world.bounds.bottom){
                         this.setGameOver();
                     }
+                    this.walls.forEachAlive(function (wall){
+                      if(wall.x + wall.width < game.world.bounds.left){
+                        wall.kill();
+                      }
+                    })
 
                   }
                   }
@@ -104,6 +109,7 @@ window.onload = function() {
                   this.player.animations.play('fly');
                   this.background.autoScroll(-SPEED*.8, 0);
                   this.scoreText.setText("Touch To\nStart Game");
+                  this.walls.removeAll();
                 },
                 setGameOver: function(){
                   this.gameOver = true;
