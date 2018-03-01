@@ -86,9 +86,12 @@ window.onload = function() {
                     if(this.player.body.bottom >= this.world.bounds.bottom){
                         this.setGameOver();
                     }
+                    this.physics.arcade.collide(this.player, this.walls, this.setGameOver, null, this);
                     this.walls.forEachAlive(function (wall){
                       if(wall.x + wall.width < game.world.bounds.left){
                         wall.kill();
+                      } else if(!wall.scored && wall.x <= state.player.x){
+                        state.addScore(wall);
                       }
                     })
 
@@ -113,6 +116,11 @@ window.onload = function() {
                 },
                 setGameOver: function(){
                   this.gameOver = true;
+                  this.walls.forEachAlive(function (wall){
+                    wall.body.velocity.x = wall.body.velocity.y = 0;
+                  });
+                  this.wallTimer.timer.stop();
+                  this.player.body.velocity.x = 0;
                   this.scoreText.setText("FINAL SCORE\n" + this.score+"\n\nTOUCH TO\n TRY AGAIN");
                   this.timeOver = this.time.now;
                 },
@@ -138,6 +146,12 @@ window.onload = function() {
                   var wallY = this.rnd.integerInRange(game.height*.3, game.height*.7);
                   var botWall = this.spawnWall(wallY);
                   var topWall = this.spawnWall(wallY, true);
+
+                },
+                addScore: function(wall){
+                  wall.scored = true;
+                  this.score += .5;
+                  this.scoreText.setText("SCORE\n"+this.score);
 
                 }
   }
