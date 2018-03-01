@@ -125,15 +125,16 @@ window.onload = function() {
                   this.timeOver = this.time.now;
                 },
                 spawnWall: function(y, flipped){
+                  flipped = false;
                   var wall = this.walls.create(
                     game.width,
-                    y+(flipped ? -OPENING: OPENING)/2,
+                    y+(flipped ? -OPENING: OPENING-30)/2,
                     'wall'
                   );
                   this.physics.arcade.enableBody(wall);
                   wall.body.allowGravity = false;
                   wall.scored = false;
-                  wall.scored = false;
+                  //wall.scored = false;
                   wall.body.immovable = true;
                   wall.body.velocity.x = -SPEED;
                   if(flipped){
