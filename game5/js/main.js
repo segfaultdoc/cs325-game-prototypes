@@ -11,6 +11,7 @@ window.onload = function() {
   let leftKey;
   let rightKey;
   let spaceKey;
+  var krabby;
   var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
   
   var state = {
@@ -28,7 +29,7 @@ window.onload = function() {
                 preload: function(){
                   ocean = game.load.image('background', 'assets/ocean.png');
                   game.load.image('wall', 'assets/walls.png');
-                  //ocean.scale.x = .5;
+                  this.load.image('krabby', 'assets/krabbypatty.png');
                   this.load.spritesheet('player', 'assets/polarBear.png', 200, 300);
                   
                 },
@@ -39,6 +40,7 @@ window.onload = function() {
                   this.background = this.add.tileSprite(0,0,this.world.width, this.world.height, 'background');
                   this.walls = this.add.group();
                   this.player = this.add.sprite(0,0, 'player');
+                  this.krabby = this.add.sprite(0,0, 'krabby');
                   // register the keys
                   this.leftKey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
                   this.rightKey = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
@@ -47,10 +49,21 @@ window.onload = function() {
                   this.input.keyboard.addKeyCapture([ Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.SPACEBAR ]);
                   //this.player.animations.add('fly', [0,1,2], 10, true);
                   this.physics.arcade.enableBody(this.player);
-                 
+                  this.player.body.bounce.y = .2;
+                  this.player.body.gravity.y = GRAVITY;
                   this.player.body.collideWorldBounds = true;
-//                  this.player.anchor.setTo(.5,.5);
-                  this.scoreText = this.add.text(
+                  this.player.animations.add('left', [0,1,2,3],10, true);
+                  this.player.animations.add('right', [5,6,7,8], 10, true);
+                  //                 this.player.anchor.setTo(.5,.5);
+                  
+                  
+ this.krabby = this.add.group();
+                  this.krabby.enableBody = true;
+                  for(var i = 0; i <12; i++){
+                      var k = this.krabby.create(i*70, 0, 'krabby');
+                      this.krabby.body.gravity.y = 6;
+                      this.krabby.body.bounce.y = .7 + Math.random()*.2;
+                  }                 this.scoreText = this.add.text(
                         this.world.centerX,
                         this.world.height/5,
                         "",
@@ -70,25 +83,29 @@ window.onload = function() {
                 update: function(){
                  this.player.body.velocity.x = 0;
                   this.player.body.velocity.y = 0;
-
+                  this.physics.arcade.overlap(this.player, this.krabby, this.collectKrabby, null, this); 
                   if(this.leftKey.isDown){
                     //this.player.scale.x = 1;
                     this.player.body.velocity.x = -200;
+                    this.player.animations.play('left');
                   }
                   if(this.rightKey.isDown){
                     //this.player.scale.x *= -1; 
                     this.player.body.velocity.x = 200;
+                    this.player.animations.play('right');
                   }
-                 // if(this.spaceKey.isDown){
-                  //  fireBullet();
-                 // }
+                  if(this.spaceKey.isDown){
+                    this.player.body.velocity.y = -350;
+                  }
 
                 },
   
-                //function fireBullet(){
-
-
-
+    collectKrabby: function(){
+                      this.krabby.kill();
+                  this.score +=10;
+                  this.scoreText.text='Score: ' + score;
+  
+              },
 
                 reset: function(){
                   this.gameStarted =false;
