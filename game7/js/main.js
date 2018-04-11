@@ -1,5 +1,7 @@
 "use strict";
 
+//import Blob from 'components/Blob.js';
+
 window.onload = function() {
   const SPEED = 200;
   const GRAVITY = 0;
@@ -40,10 +42,10 @@ window.onload = function() {
                   this.background = this.add.tileSprite(0,0,this.world.width, this.world.height, 'background');
                   this.walls = this.add.group();
                   this.player = this.add.sprite(0,0, 'player');
-                  this.blob = this.add.sprite(0,0, 'krabby');
+                  //this.blob = this.add.sprite(0,0, 'krabby');
                   // register the keys
                   
-                  this.blobGroup = this.add.group();
+                  /*this.blobGroup = this.add.group();
                   for(let i = 0; i < 10; i++){
                     this.blobGroup.add(new Blob(this.game));
                   }
@@ -51,6 +53,7 @@ window.onload = function() {
                   blob.spawn(128, 120 - 32, "red");
                   blob = bloblGroup.getFirstExists(false);
                   blob.spawn(128, 120 + 32, "yellow");
+                  */
                   this.downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
                   this.upkey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
                   this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
