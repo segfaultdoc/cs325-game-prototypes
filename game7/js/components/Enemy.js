@@ -1,13 +1,16 @@
-class Enemy extends Phaser.Sprite {
-  constructor(game) {
-    super(game, 0, 0, "sprites"); // sets up  Phaser.sprite
+//var Enemy extends Phaser.Sprite {
+
+function Enemy(game){
+  //constructor: function(game) {
+    this.game = game;
+    //this.p = new Phaser.Sprite(this.game, 0, 0, "sprites"); // sets up  Phaser.sprite
+    
     this.exist = false; // when an enemy is instantiated it is not staged right away
-    this.anchor.setTo(.5, .5);
+    this.sprite = null; 
+   let anim = null; 
+    //this.p.anchor.setTo(.5, .5);
     // body
-    this.game.physics.enable(this);
-    this.body.allowGravity = false;
-    this.body.immovable = true;
-    // Vulnerabilities used to calculate damage when hit
+        // Vulnerabilities used to calculate damage when hit
     this.vulnerabilities = {
       normal: 1,
       ice: 1,
@@ -18,12 +21,10 @@ class Enemy extends Phaser.Sprite {
     };
     this.maxHealth = 1; // Health to set when spawned
     this.damage = 8;
-    let anim = this.animations.add("deathAnimation", ["boom0", "boom1", "boom2"], 15, false);
-    anim.onComplete.add(this.death, this);
-  }
+      
 
-  stdReset(x, y){
-    this.reset(x, y);
+  this.stdReset = function(x, y){
+    this.sprite.reset(x, y);
     this.frozen = false;
     this.energy = this.maxHealth;
     this.exists = true;
@@ -31,7 +32,7 @@ class Enemy extends Phaser.Sprite {
     this.sleeping = true; // enemy is sleeping and will cancel it's update
   }
 
-  stdUpdate(){
+  this.stdUpdate = function(){
     if(!this.exists && this.frozen){ 
       return false;
     }
@@ -44,13 +45,13 @@ class Enemy extends Phaser.Sprite {
     return true;
   }
 
-  hit(bullet){
+  this.hit = function(bullet){
     if(this.dying){
       return;
     }
     if (bullet.type == "ice" && !this.frozen){
       this.frozen = true;
-      this.play("frozen");
+      this.game.sound.play("frozen");
     } else {
       this.frozen = false;
       this.health -= this.vulnerabilities[bullet.type];
@@ -63,18 +64,33 @@ class Enemy extends Phaser.Sprite {
         this.body.velocity.x = 0;
         this.body.velocity.y = 0;
         this.body.allowGravity = false;
-        this.play("deathAnimation");
+        this.game.sound.play("deathAnimation");
       }
   }
 
-  death(){
+  function death(){
     this.game.pickups.createNew(this.x, this.y, "random");
     this.exists = false;
   }
+  this.getGame = function(){
+    return this.game;
+  }
+
+  this.getSprite = function(){
+    return this.sprite;
+  }
+
+  Enemy.prototype.create = function(sprite){
+    this.sprite = this.game.add.sprite(0, 0, sprite);
+    this.sprite.anchor.setTo(.5, .5);
+    this.game.physics.enable(this.sprite);
+    this.sprite.body.allowGravity = false;
+    this.sprite.body.immovable = true;
+    anim = this.sprite.animations.add("deathAnimation", ["boom0", "boom1", "boom2"], 15, false);
+    anim.onComplete.add(death, this);
+  }
+
 }
-
-export default Enemy;
-
 
 
 
