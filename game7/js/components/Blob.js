@@ -34,9 +34,9 @@ function Blob(game){
     //this.game.sound.play(this.color);
         // start in a random direction
     if (Math.random() < 0.5) {
-      this.enemy.getSprite().body.velocity.x = -this.speed;
+      this.enemy.getSprite().body.velocity.x = 20;//-this.speed;
     } else {
-      this.enemy.getSprite().body.velocity.x = this.speed;
+      this.enemy.getSprite().body.velocity.x = 30;//this.speed;
     }
   }
 
@@ -56,17 +56,17 @@ function Blob(game){
 /* The update method will be called automatically by Phaser, just as in the pure Phaser.Sprite class */
   Blob.prototype.update = function() {
     if(!this.enemy.stdUpdate()){
-      console.log('stdupdate from blob update()'); 
+      //console.log('stdupdate sksk from blob update()'); 
       return;
     } // Do a standard update from this.enemy class to check if update should even be done
-    console.log('stdupdate from blob update()')
+    //console.log('stdupdate from blob update()')
     this.game.physics.arcade.collide(this, this.game.collisionLayer);
-    if (this.body.blocked.right) {
+    if (this.enemy.getSprite().body.blocked.right) {
       this.scale.x = -1;
-      this.body.velocity.x = -this.speed;
-    } else if (this.body.blocked.left) {
-      this.scale.x = 1;
-      this.body.velocity.x = this.speed;
+      this.enemy.getSprite().body.velocity.x = 100;//-this.speed;
+    } else if (this.enemy.getSprite().body.blocked.left) {
+      this.enemy.getSprite().scale.x = 1;
+      this.enemy.getSprite().body.velocity.x = this.speed;
     }
   }
 }

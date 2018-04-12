@@ -14,8 +14,8 @@ window.onload = function() {
   let upkey;
   let spaceKey;
   var blobs = [];
-  //let blobGroup;
-  //let blob;
+  var time_til_spawn = Math.random()*3000 + 2000;  //Random time between 2 and 5 seconds.
+  var last_spawn_time = this.game.time; 
   var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
   
   var state = {
@@ -33,8 +33,8 @@ window.onload = function() {
                 preload: function(){
                   ocean = game.load.image('background', 'assets/ocean.png');
                   game.load.image('wall', 'assets/walls.png');
-                  this.load.image('blob', 'assets/krabbypatty.png');
-                  this.load.spritesheet('player', 'assets/polarBear.png', 200, 300);
+                  this.load.image('blob', 'assets/jellyfish.png');
+                  this.load.spritesheet('player', 'assets/plane.png', 200, 300);
                 },
                 create: function(){
                   //ocean.scale.setTo(.5,.3);
@@ -58,10 +58,10 @@ window.onload = function() {
                   
                   //this.blob = this.blobGroup.getFirstExists(false);
                   this.blob = blobs[0];
-                  this.blob.spawn(128, 120 - 32, "red");
+                  //this.blob.spawn(128, 120 - 32, "red");
                   //this.blob = this.blobGroup.getFirstExists(false);
                   this.blob = blobs[1];
-                  this.blob.spawn(128, 120 + 32, "yellow");
+                 // this.blob.spawn(128, 120 + 32, "yellow");
                   
                   this.downKey = this.input.keyboard.addKey(Phaser.Keyboard.DOWN);
                   this.upkey = this.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -75,27 +75,18 @@ window.onload = function() {
                   this.player.body.collideWorldBounds = true;
                   this.player.animations.add('left', [0,1,2,3], 10, true);
                   this.player.animations.add('right', [5,6,7,8], 10, true);
-                  //                 this.player.anchor.setTo(.5,.5);
-                  
-                  
- //this.krabby = this.add.group();
-   //               this.krabby.enableBody = true;
-                  /*for(var i = 0; i <12; i++){
-                      var k = this.krabby.create(i*70, 0, 'krabby');
-                      this.krabby.body.gravity.y = 6;
-                      this.krabby.body.bounce.y = .7 + Math.random()*.2;
-                  } */                
-                        this.scoreText = this.add.text(
-                        this.world.centerX,
-                        this.world.height/5,
-                        "",
-                        {
+                                  
+                  this.scoreText = this.add.text(
+                      this.world.centerX,
+                      this.world.height/5,
+                      "",
+                      {
 
-                          size: "32px",
-                          fill: "#FFF",
-                          align: "center"
+                        size: "32px",
+                        fill: "#FFF",
+                        align: "center"
 
-                        }
+                      }
                   );
                   this.scoreText.anchor.setTo(.5,.5);
                   //this.spawnWall(300);
@@ -104,10 +95,18 @@ window.onload = function() {
                 },
                 update: function(){
                  //this.player.body.velocity.x = 150;
+                  var current_time = game.time.time;
+                  /*if(current_time - last_spawn_time > time_til_spawn){
+                    time_til_spawn = Math.random()*3000 + 2000;
+                    last_spawn_time = current_time;
+                    blobs[0].spawn(128, 120 + 32, "yellow");                  
+                  } */
                   this.background.tilePosition.x += -2;
-                   
+                  blobs.forEach(function(b){
+                    b.update()
+                  });
                   //this.player.body.velocity.y = 0;
-                  //this.physics.arcade.overlap(this.player, this.krabby, this.collectKrabby, null, this); 
+                  this.physics.arcade.overlap(this.player, this.blob, this.collectKrabby, null, this); 
                   if(this.downKey.isDown){
                     //this.player.scale.x = 1;
                     this.player.body.velocity.y = 200;

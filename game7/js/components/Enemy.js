@@ -61,8 +61,8 @@ function Enemy(game){
     }
       if(this.health < 1){
         this.dying = true;
-        this.body.velocity.x = 0;
-        this.body.velocity.y = 0;
+        this.body.velocity.x = 100;//0;
+        this.body.velocity.y = 100;//0;
         this.body.allowGravity = false;
         this.game.sound.play("deathAnimation");
       }
@@ -81,8 +81,8 @@ function Enemy(game){
   }
 
   Enemy.prototype.create = function(sprite, x, y){
-    this.sprite = this.game.add.sprite(Math.random(), Math.random(), sprite);
-    this.sprite.anchor.setTo(.5, .5);
+    this.sprite = this.game.add.sprite(360 + Math.random()*200, 120 +Math.random()*200, sprite);
+    //this.sprite.anchor.setTo(.5, .5);
     this.game.physics.enable(this.sprite);
     this.sprite.body.allowGravity = false;
     this.sprite.body.immovable = true;
