@@ -45,7 +45,7 @@ function Blob(game){
   }
 
   Blob.prototype.create = function(){
-    this.enemy.create('blob');
+    this.enemy.create('blob', 500, 500);
     /*this.enemy.getSprite().animations.add("yellow", ["ripperYellow"]);
     this.enemy.getSprite().animations.add("red", ["ripperRed"]);
     this.enemy.getSprite().animations.add("frozen", ["ripperFrozen"]);

@@ -80,8 +80,8 @@ function Enemy(game){
     return this.sprite;
   }
 
-  Enemy.prototype.create = function(sprite){
-    this.sprite = this.game.add.sprite(0, 0, sprite);
+  Enemy.prototype.create = function(sprite, x, y){
+    this.sprite = this.game.add.sprite(Math.random(), Math.random(), sprite);
     this.sprite.anchor.setTo(.5, .5);
     this.game.physics.enable(this.sprite);
     this.sprite.body.allowGravity = false;
