@@ -8,6 +8,7 @@ window.onload = function() {
   const JET = 420;
   const OPENING = 200;
   const SPAWN_RATE = 5;
+  let finalScore;
   var worldWidth;
   var worldCenterY;
   let oneKey;
@@ -54,11 +55,15 @@ window.onload = function() {
                 preload: function(){
                   gameBackground = game.load.image('background', 'assets/matrix.png');
                   game.load.image('wall', 'assets/walls.png');
-                  this.load.image('blob', 'assets/jellyfish.png');
-                  this.load.spritesheet('bins', 'assets/plane.png', 200, 300);
+                  this.load.image('blob', 'assets/chicken.png');
+                  this.load.spritesheet('bins', 'assets/bucket.png', 200, 300);
+                  this.load.spritesheet('bin2', 'assets/bucket2.png', 200, 300);
+                  this.load.spritesheet('bin3', 'assets/bucket3.png', 200, 300);
+
                 },
                 create: function(){
                   this.wallTimer = this.game.time.events.loop(Phaser.Timer.SECOND*SPAWN_RATE, this.spawnJob, this);
+                  this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND*10, this.setGameOver, this);
 
                   worldWidth = this.world.width;
                   worldCenterY = this.world.centerY;
@@ -68,8 +73,8 @@ window.onload = function() {
                   this.background = this.add.tileSprite(0,0,this.world.width, this.world.height, 'background');
                   this.walls = this.add.group();
                   bins.push(this.add.sprite(0,0, 'bins'));
-                  bins.push(this.add.sprite(50, 50, 'bins'));
-                  bins.push(this.add.sprite(150, 150, 'bins'));
+                  bins.push(this.add.sprite(50, 50, 'bin2'));
+                  bins.push(this.add.sprite(150, 150, 'bin3'));
                    
                   
                   this.blobGroup = this.add.group();
@@ -93,6 +98,7 @@ window.onload = function() {
                   this.physics.arcade.enableBody(bins[1]);
                   this.physics.arcade.enableBody(bins[2]);
                   bins.forEach(function(player){ 
+                    player.scale.setTo(.5,.5);
                     player.body.bounce.y = .2;
                     player.body.gravity.y = GRAVITY;
                     player.body.collideWorldBounds = true;
@@ -204,9 +210,13 @@ window.onload = function() {
                     wall.body.velocity.x = wall.body.velocity.y = 0;
                   });
                   this.wallTimer.timer.stop();
-                  this.first_bin.body.velocity.x = 0;
-                  this.scoreText.setText("FINAL SCORE\n" + this.score+"\n\nTOUCH TO\n TRY AGAIN");
-                  this.timeOver = this.time.now;
+                  this.gameTimer.timer.stop(); 
+                  finalScore = this.score;
+                  bins.forEach(function(player){
+                    player.body.velocity.x = 0;
+                  });
+                  this.scoreText.setText("FINAL SCORE\n" + this.score+"\n\nCLICK TO\n TRY AGAIN");
+                  //this.timeOver = this.time.now;
                 },
                 spawnWall: function(y, flipped){
                   flipped = false;
