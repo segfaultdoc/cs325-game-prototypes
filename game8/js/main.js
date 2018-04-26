@@ -3,6 +3,7 @@
 //import Blob from 'components/Blob.js';
 
 window.onload = function() {
+
   const SPEED = 200;
   const GRAVITY = 9.8;
   const JET = 420;
@@ -24,24 +25,31 @@ window.onload = function() {
   var blobs = [];
   let arcade;
   var time_til_spawn = Math.random()*3000 + 2000;  //Random time between 2 and 5 seconds.
-  var last_spawn_time = this.game.time; 
+  //var last_spawn_time = this.game.time; 
   var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
  
-  function resetPlayer(player, index){
+            function resetPlayer(player, index){
                     player.body.allowGravity = false;
                     player.reset(worldWidth / 4, worldCenterY);
                     player.animations.play('fly')
               } 
   
-  function callOverlap(player, blob){
+              function callOverlap(player, blob){
                    console.log('overlap');
                   arcade.overlap(player, blob.getSprite(), state.caught(), null, this); 
               }
-  
+            
+              
+
+
   var state = {
                 
-                                
-                start: function(){
+                
+              jet: function(){
+                this.reset();
+              },
+              
+              start: function(){
                   bins.forEach(function(player){
                     player.body.allowGravity = true;
                   });
@@ -63,7 +71,7 @@ window.onload = function() {
                 },
                 create: function(){
                   this.wallTimer = this.game.time.events.loop(Phaser.Timer.SECOND*SPAWN_RATE, this.spawnJob, this);
-                  this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND*10, this.setGameOver, this);
+                  this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND*60, this.setGameOver, this);
 
                   worldWidth = this.world.width;
                   worldCenterY = this.world.centerY;
@@ -117,6 +125,7 @@ window.onload = function() {
                       }
                   );
                   this.scoreText.anchor.setTo(.5,.5); 
+                  this.input.onDown.add(this.jet, this);
                   this.reset();
                 },
                 update: function(){
@@ -194,10 +203,10 @@ window.onload = function() {
               
                 reset: function(){
                   this.gameStarted = true;
-                  //this.gameOver = false;
+                 // this.gameOver = false;
                   this.score =0;
                   bins.forEach(function(player, index){  
-                    resetPlayer(player, index);
+                  resetPlayer(player, index);
                     
                   });
                     //this.background.autoScroll(-SPEED*.8, 0);
@@ -205,18 +214,20 @@ window.onload = function() {
                   this.walls.removeAll();
                 },
                 setGameOver: function(){
+                  //this.gameOver = true;
                   this.gameStarted = false;
                   this.walls.forEachAlive(function (wall){
                     wall.body.velocity.x = wall.body.velocity.y = 0;
                   });
                   this.wallTimer.timer.stop();
-                  this.gameTimer.timer.stop(); 
+                  //this.gameTimer.timer.stop(); 
                   finalScore = this.score;
                   bins.forEach(function(player){
                     player.body.velocity.x = 0;
                   });
                   this.scoreText.setText("FINAL SCORE\n" + this.score+"\n\nCLICK TO\n TRY AGAIN");
-                  //this.timeOver = this.time.now;
+                  //this.input.onDown.add(this.reset(), this);
+                  this.timeOver = this.time.now;
                 },
                 spawnWall: function(y, flipped){
                   flipped = false;
@@ -258,6 +269,7 @@ window.onload = function() {
     'game',
     state
    )
-  
+ 
+  return finalScore;
  
 };
