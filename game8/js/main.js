@@ -8,27 +8,46 @@ window.onload = function() {
   const JET = 420;
   const OPENING = 200;
   const SPAWN_RATE = 5;
+  var worldWidth;
+  var worldCenterY;
+  let oneKey;
+  let twoKey;
+  let threeKey;
   let gameStarted = false;
   var gameBackground;
-  var player;
+  var bins = [];
   let boss;
   let rightKey;
   let leftKey;
   let spaceKey;
   var blobs = [];
+  let arcade;
   var time_til_spawn = Math.random()*3000 + 2000;  //Random time between 2 and 5 seconds.
   var last_spawn_time = this.game.time; 
   var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
+ 
+  function resetPlayer(player, index){
+                    player.body.allowGravity = false;
+                    player.reset(worldWidth / 4, worldCenterY);
+                    player.animations.play('fly')
+              } 
+  
+  function callOverlap(player, blob){
+                   console.log('overlap');
+                  arcade.overlap(player, blob.getSprite(), state.caught(), null, this); 
+              }
   
   var state = {
                 
                                 
                 start: function(){
-                  this.player.body.allowGravity = true;
+                  bins.forEach(function(player){
+                    player.body.allowGravity = true;
+                  });
                   this.scoreText.setText("SCORE\n"+this.score);
                   this.gameStarted = true;
-                  this.wallTimer = this.game.time.events.loop(Phaser.Timer.SECOND*SPAWN_RATE, this.spawnWalls, this);
-                  this.wallTimer.timer.start();
+                  //this.wallTimer = this.game.time.events.loop(Phaser.Timer.SECOND*SPAWN_RATE, this.spawnJob, this);
+                  //this.wallTimer.timer.start();
 
                 },
                 
@@ -36,15 +55,22 @@ window.onload = function() {
                   gameBackground = game.load.image('background', 'assets/matrix.png');
                   game.load.image('wall', 'assets/walls.png');
                   this.load.image('blob', 'assets/jellyfish.png');
-                  this.load.spritesheet('player', 'assets/plane.png', 200, 300);
+                  this.load.spritesheet('bins', 'assets/plane.png', 200, 300);
                 },
                 create: function(){
-                  //ocean.scale.setTo(.5,.3);
+                  this.wallTimer = this.game.time.events.loop(Phaser.Timer.SECOND*SPAWN_RATE, this.spawnJob, this);
+
+                  worldWidth = this.world.width;
+                  worldCenterY = this.world.centerY;
                   this.physics.startSystem(Phaser.Physics.ARCADE);
+                  arcade = this.physics.arcade;
                   this.physics.arcade.gravity.y = GRAVITY;
                   this.background = this.add.tileSprite(0,0,this.world.width, this.world.height, 'background');
                   this.walls = this.add.group();
-                  this.player = this.add.sprite(0,0, 'player');
+                  bins.push(this.add.sprite(0,0, 'bins'));
+                  bins.push(this.add.sprite(50, 50, 'bins'));
+                  bins.push(this.add.sprite(150, 150, 'bins'));
+                   
                   
                   this.blobGroup = this.add.group();
                 
@@ -53,16 +79,24 @@ window.onload = function() {
                   this.blobGroup.add(boss.getSprite());
                   blobs.push(boss);
                 
+                  this.oneKey = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
+                  this.twoKey = this.input.keyboard.addKey(Phaser.Keyboard.TWO);
+                  this.threeKey = this.input.keyboard.addKey(Phaser.Keyboard.THREE);
                   this.leftKey = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
                   this.rightKey = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
                   this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
                   // stop the following keys from propagating up to the browser
-                  this.input.keyboard.addKeyCapture([ Phaser.Keyboard.RIGHT, Phaser.Keyboard.LEFT, Phaser.Keyboard.SPACEBAR ]);
+                  this.input.keyboard.addKeyCapture([ Phaser.Keyboard.ONE, Phaser.Keyboard.TWO, Phaser.Keyboard.THREE, Phaser.Keyboard.RIGHT, Phaser.Keyboard.LEFT, Phaser.Keyboard.SPACEBAR ]);
                   //this.player.animations.add('fly', [0,1,2], 10, true);
-                  this.physics.arcade.enableBody(this.player);
-                  this.player.body.bounce.y = .2;
-                  this.player.body.gravity.y = GRAVITY;
-                  this.player.body.collideWorldBounds = true;
+                  
+                  this.physics.arcade.enableBody(bins[0]);
+                  this.physics.arcade.enableBody(bins[1]);
+                  this.physics.arcade.enableBody(bins[2]);
+                  bins.forEach(function(player){ 
+                    player.body.bounce.y = .2;
+                    player.body.gravity.y = GRAVITY;
+                    player.body.collideWorldBounds = true;
+                  });
 
                   this.scoreText = this.add.text(
                       this.world.centerX,
@@ -84,55 +118,83 @@ window.onload = function() {
                     this.scoreText.text='Score: ' + this.score;   
                     var current_time = game.time.time;
                     
-                    this.background.tilePosition.y += -2;
+                   
                     
-                      
+                    this.background.tilePosition.y += -2;
+                    let bin_that_caught_job = null; 
                     for(let i =0; i < blobs.length; i++){
                       blobs[i].update()
-                      if (Math.floor(blobs[i].getY()) === Math.floor(this.player.body.y)){
+                      //let bin_that_caught_job = null;   
+                      bin_that_caught_job = bins.forEach(function(player) {
+                        if(Math.abs(Math.floor(player.body.y) - Math.floor(blobs[i].getY())) <= 7  && Math.abs(Math.floor(player.body.x) - Math.floor(blobs[i].getX())) <= 100){
+                          console.log('for each collision');
+                          callOverlap(player, blobs[i]);
+                          blobs[i].setY(-100);
+
+                          
+                        }
+                      
+                      });
+                      /*if (bin_that_caught_job != null){
                         console.log('collision');
-                        this.physics.arcade.overlap(this.player, blobs[i].getSprite(), this.caught, null, this); 
-                      }
+                        this.physics.arcade.overlap(bin_that_caught_job, blobs[i].getSprite(), this.caught, null, this); 
+                      }*/
                     }
                   
                    
                     if(this.rightKey.isDown){
                     
-                      //if(!this.gameStarted){
-                        //this.start();
-                      //}
-                      this.player.body.velocity.x = 200;
-                      console.log(this.player.body.y);
+                      
+                      bins[this.whichBin()].body.velocity.x = 200;
+                      console.log(bins[this.whichBin()].body.y);
                       //console.log(this.boss.body.y);
-                      this.player.animations.play('right');
+                      bins[this.whichBin()].animations.play('right');
                     }
                     if(this.leftKey.isDown){
                      
-                      this.player.body.velocity.x = -200;
-                      this.player.animations.play('left');
+                      bins[this.whichBin()].body.velocity.x = -200;
+                      bins[this.whichBin()].animations.play('left');
                     }
                     if(this.spaceKey.isDown){
-                      this.player.body.velocity.y = 0;
+                      bins.forEach(function(player){
+                        player.body.velocity.x = 0;
+                      });
                     }
                   }
 
                 },
-  
+
+              spawnJob: function(){
+
+                boss = new Blob(game);  
+                boss.create();
+                this.blobGroup.add(boss.getSprite());
+                blobs.push(boss);
+                console.log('spawn job');
+              },
+
+              whichBin: function(){
+                if(this.oneKey.isDown){ return 0; }
+                else if(this.twoKey.isDown) { return 1; }
+                else{ return 2; }
+              },
+
               caught: function(){
                   //this.krabby.kill();
                   this.score +=10;
                   this.scoreText.text='Score: ' + this.score;
                   console.log(this.score); 
               },
-
+              
                 reset: function(){
                   this.gameStarted = true;
                   //this.gameOver = false;
                   this.score =0;
-                  this.player.body.allowGravity = false;
-                  this.player.reset(this.world.width / 4, this.world.centerY);
-                  this.player.animations.play('fly');
-                  //this.background.autoScroll(-SPEED*.8, 0);
+                  bins.forEach(function(player, index){  
+                    resetPlayer(player, index);
+                    
+                  });
+                    //this.background.autoScroll(-SPEED*.8, 0);
                   this.scoreText.setText("Touch To\nStart Game");
                   this.walls.removeAll();
                 },
@@ -142,7 +204,7 @@ window.onload = function() {
                     wall.body.velocity.x = wall.body.velocity.y = 0;
                   });
                   this.wallTimer.timer.stop();
-                  this.player.body.velocity.x = 0;
+                  this.first_bin.body.velocity.x = 0;
                   this.scoreText.setText("FINAL SCORE\n" + this.score+"\n\nTOUCH TO\n TRY AGAIN");
                   this.timeOver = this.time.now;
                 },

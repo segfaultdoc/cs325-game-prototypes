@@ -22,6 +22,14 @@ function Blob(game){
     return this.enemy.getSprite().body.y;
   }
 
+  this.getX = function(){
+    return this.enemy.getSprite().body.x;
+  }
+
+  this.setY = function(n){
+    this.enemy.getSprite().body.y = n;
+  }
+
   this.spawn = function(x, y, type) {
     this.enemy.stdReset(x, y);
     this.color = type;
